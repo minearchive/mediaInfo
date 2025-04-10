@@ -126,7 +126,7 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeMedia_getMediaInfo(_env:
 
     #[cfg(target_os = "linux")]
     {
-        data = platform::linux::get_media_info().to_string();
+        data = platform::linux::get_media_info().unwrap().to_string();
     }
 
     _env.new_string(&data).unwrap().into_raw()
@@ -143,7 +143,7 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeMedia_getPlaybackState(_
 
     #[cfg(target_os = "linux")]
     {
-        data = platform::linux::get_playback_state().to_string();
+        data = platform::linux::get_playback_state().unwrap().to_string();
     }
 
     _env.new_string(&data).unwrap().into_raw()
@@ -154,11 +154,18 @@ mod tests {
     use crate::platform;
 
     #[test]
-    fn run() {
-        println!("media info");
-        println!("{}", platform::windows::get_media_info().to_string());
+    fn info_text() {
 
-        println!("media playback state");
-        println!("{}", platform::windows::get_playback_state().to_string());
-    }
+        #[cfg(target_os = "linux")]
+        {
+            println!("{}", platform::linux::get_media_info().unwrap().to_string());
+            println!("{}", platform::linux::get_playback_state().unwrap().to_string());
+        }
+
+        #[cfg(target_os = "windows")]
+        {
+            println!("{}", platform::windows::get_media_info().unwrap().to_string());
+            println!("{}", platform::windows::get_playback_state().unwrap().to_string());
+        }
+     }
 }
