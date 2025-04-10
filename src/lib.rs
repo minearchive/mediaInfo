@@ -1,3 +1,7 @@
+use jni::JNIEnv;
+use jni::objects::JClass;
+use jni::sys::jstring;
+
 mod platform;
 
 struct MediaInfo {
@@ -111,7 +115,39 @@ impl PlaybackState {
     }
 }
 
+#[no_mangle]
+pub extern "system" fn Java_dev_yuzuki_libs_media_NativeMedia_getMediaInfo(_env: JNIEnv, _class: JClass) -> jstring {
+    let mut data = String::new();
 
+    #[cfg(target_os = "windows")]
+    {
+        data = platform::windows::get_media_info().to_string();
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        data = platform::linux::get_media_info().to_string();
+    }
+
+    _env.new_string(&data).unwrap().into_raw()
+}
+
+#[no_mangle]
+pub extern "system" fn Java_dev_yuzuki_libs_media_NativeMedia_getPlaybackState(_env: JNIEnv, _class: JClass) -> jstring {
+    let mut data = String::new();
+
+    #[cfg(target_os = "windows")]
+    {
+        data = platform::windows::get_playback_state().to_string();
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        data = platform::linux::get_playback_state().to_string();
+    }
+
+    _env.new_string(&data).unwrap().into_raw()
+}
 
 #[cfg(test)]
 mod tests {

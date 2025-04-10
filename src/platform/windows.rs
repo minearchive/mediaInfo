@@ -6,9 +6,13 @@ use std::{
 };
 use windows::{
     core::HSTRING,
-    Media::Control::{
-        GlobalSystemMediaTransportControlsSessionManager,
-        GlobalSystemMediaTransportControlsSessionMediaProperties
+    Media::{
+        MediaPlaybackAutoRepeatMode,
+        Control::{
+            GlobalSystemMediaTransportControlsSessionManager,
+            GlobalSystemMediaTransportControlsSessionMediaProperties,
+            GlobalSystemMediaTransportControlsSessionPlaybackStatus
+        }
     },
     Storage::{
         CreationCollisionOption,
@@ -20,7 +24,6 @@ use windows::{
         }
     }
 };
-use windows::Media::Control::GlobalSystemMediaTransportControlsSessionPlaybackStatus;
 
 pub fn get_media_info() -> MediaInfo {
     let session = GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap();
@@ -63,6 +66,66 @@ pub fn get_playback_state() -> PlaybackState {
         state.Controls().unwrap().IsPlaybackRateEnabled().unwrap(),
         state.Controls().unwrap().IsPlaybackPositionEnabled().unwrap(),
     )
+}
+
+pub fn try_play() {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryPlayAsync().expect("Error caused while trying play");
+}
+
+pub fn try_pause() {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryPauseAsync().expect("Error caused while trying pause async");
+}
+
+pub fn try_stop() {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryStopAsync().expect("Error caused while trying stop async");
+}
+
+pub fn try_record() {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryRecordAsync().expect("Error caused while trying record async");
+}
+
+pub fn try_fast_forward() {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryFastForwardAsync().expect("Error caused while trying fast_forward async");
+}
+
+pub fn try_rewind() {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryRewindAsync().expect("Error caused while trying rewind async");
+}
+
+pub fn try_next() {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TrySkipNextAsync().expect("Error caused while trying skip_next async");
+}
+
+pub fn try_previous() {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TrySkipPreviousAsync().expect("Error caused while trying skip_previous_async");
+}
+
+pub fn try_change_channel_up() {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeChannelUpAsync().expect("Error caused while trying change channel_up_async");
+}
+
+pub fn try_change_channel_down() {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeChannelDownAsync().expect("Error caused while trying change channel_down_async");
+}
+
+pub fn try_play_pause_toggle() {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryTogglePlayPauseAsync().expect("Error caused while trying to try to play pause toggle");
+}
+
+pub fn try_change_shuffle(shuffle: bool) {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeShuffleActiveAsync(shuffle).expect("Error caused while trying to try to change shuffle active async");
+}
+
+pub fn try_change_repeat(repeat: MediaPlaybackAutoRepeatMode) {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeAutoRepeatModeAsync(repeat).unwrap().get().expect("Error caused while trying to try to change autorepeat mode async");
+}
+
+pub fn try_change_playback_rate(i: i64) {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangePlaybackPositionAsync(i).expect("Error caused while trying to try to change playback position async");
+}
+
+pub fn try_change_playback_position(i: i64) {
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangePlaybackPositionAsync(i).expect("Error caused while trying to try to change playback position async");
 }
 
 //noinspection Annotator
