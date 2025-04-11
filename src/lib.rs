@@ -164,8 +164,8 @@ mod tests {
 
         #[cfg(target_os = "windows")]
         {
-            println!("{}", platform::windows::get_media_info().unwrap().to_string());
-            println!("{}", platform::windows::get_playback_state().unwrap().to_string());
+            println!("{}", platform::windows::get_media_info().to_string());
+            println!("{}", platform::windows::get_playback_state().to_string());
         }
      }
 }

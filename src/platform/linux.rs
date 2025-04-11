@@ -143,6 +143,7 @@ fn vec_to_str(str: Vec<&str>) -> String {
         .join(", ")
 }
 
+#[cfg(target_os = "linux")]
 fn next(loop_status: LoopStatus) -> LoopStatus {
     if loop_status == LoopStatus::None {
         LoopStatus::Track
