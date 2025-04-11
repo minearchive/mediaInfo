@@ -53,9 +53,9 @@ pub fn get_playback_state() -> PlaybackState {
         GlobalSystemMediaTransportControlsSessionPlaybackStatus::Playing == state.PlaybackStatus().unwrap(),
         GlobalSystemMediaTransportControlsSessionPlaybackStatus::Paused == state.PlaybackStatus().unwrap(),
         GlobalSystemMediaTransportControlsSessionPlaybackStatus::Stopped == state.PlaybackStatus().unwrap(),
-        state.IsShuffleActive().unwrap().Value().unwrap(),
-        state.AutoRepeatMode().unwrap().Value().unwrap() == MediaPlaybackAutoRepeatMode::Track,
-        state.AutoRepeatMode().unwrap().Value().unwrap() == MediaPlaybackAutoRepeatMode::List,
+        if state.Controls().unwrap().IsShuffleEnabled().unwrap() { state.IsShuffleActive().unwrap().Value().unwrap() } else { false },
+        if state.Controls().unwrap().IsRepeatEnabled().unwrap() { state.AutoRepeatMode().unwrap().Value().unwrap() == MediaPlaybackAutoRepeatMode::Track } else { false },
+        if state.Controls().unwrap().IsRepeatEnabled().unwrap() { state.AutoRepeatMode().unwrap().Value().unwrap() == MediaPlaybackAutoRepeatMode::List } else { false },
         timeline.Position().unwrap().Duration,
         timeline.MaxSeekTime().unwrap().Duration,
         state.Controls().unwrap().IsPlayEnabled().unwrap(),
@@ -266,7 +266,7 @@ fn save_thumbnail_and_get_path(
 ) -> String {
     let thumbnail = properties.Thumbnail().unwrap();
     let cache_folder = StorageFolder::GetFolderFromPathAsync(&HSTRING::from(env::temp_dir().to_str().unwrap())).unwrap().get().unwrap();
-    let file_name = format!("thumbnail_cache_{}.jpg", name);
+    let file_name = format!("thumbnail_cache_{}.jpg", name.replace("/", ""));
 
     let file = cache_folder
         .CreateFileAsync(&file_name.into(), CreationCollisionOption::ReplaceExisting)
