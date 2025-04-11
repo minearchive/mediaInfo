@@ -293,6 +293,7 @@ fn save_thumbnail_and_get_path(
     file.Path().unwrap().to_string()
 }
 
+#[cfg(target_os = "windows")]
 fn next(mode: MediaPlaybackAutoRepeatMode) -> MediaPlaybackAutoRepeatMode {
     if mode == MediaPlaybackAutoRepeatMode::None {
         MediaPlaybackAutoRepeatMode::Track
