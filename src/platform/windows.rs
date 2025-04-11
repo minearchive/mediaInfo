@@ -53,6 +53,9 @@ pub fn get_playback_state() -> PlaybackState {
         GlobalSystemMediaTransportControlsSessionPlaybackStatus::Playing == state.PlaybackStatus().unwrap(),
         GlobalSystemMediaTransportControlsSessionPlaybackStatus::Paused == state.PlaybackStatus().unwrap(),
         GlobalSystemMediaTransportControlsSessionPlaybackStatus::Stopped == state.PlaybackStatus().unwrap(),
+        state.IsShuffleActive().unwrap().Value().unwrap(),
+        state.AutoRepeatMode().unwrap().Value().unwrap() == MediaPlaybackAutoRepeatMode::Track,
+        state.AutoRepeatMode().unwrap().Value().unwrap() == MediaPlaybackAutoRepeatMode::List,
         timeline.Position().unwrap().Duration,
         timeline.MaxSeekTime().unwrap().Duration,
         state.Controls().unwrap().IsPlayEnabled().unwrap(),
@@ -74,78 +77,185 @@ pub fn get_playback_state() -> PlaybackState {
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_play() {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryPlayAsync().expect("Error caused while trying play");
+pub fn try_play() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryPlayAsync() {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_pause() {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryPauseAsync().expect("Error caused while trying pause async");
+pub fn try_pause() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryPauseAsync() {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_stop() {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryStopAsync().expect("Error caused while trying stop async");
+pub fn try_stop() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryStopAsync() {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_record() {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryRecordAsync().expect("Error caused while trying record async");
+pub fn try_record() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryRecordAsync() {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_fast_forward() {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryFastForwardAsync().expect("Error caused while trying fast_forward async");
+pub fn try_fast_forward() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryFastForwardAsync() {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_rewind() {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryRewindAsync().expect("Error caused while trying rewind async");
+pub fn try_rewind() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryRewindAsync() {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_next() {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TrySkipNextAsync().expect("Error caused while trying skip_next async");
+pub fn try_next() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TrySkipNextAsync() {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_previous() {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TrySkipPreviousAsync().expect("Error caused while trying skip_previous_async");
+pub fn try_previous() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TrySkipPreviousAsync() {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_change_channel_up() {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeChannelUpAsync().expect("Error caused while trying change channel_up_async");
+pub fn try_change_channel_up() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeChannelUpAsync() {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_change_channel_down() {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeChannelDownAsync().expect("Error caused while trying change channel_down_async");
+pub fn try_change_channel_down() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeChannelDownAsync() {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_play_pause_toggle() {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryTogglePlayPauseAsync().expect("Error caused while trying to try to play pause toggle");
+pub fn try_play_pause_toggle() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryTogglePlayPauseAsync() {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_change_shuffle(shuffle: bool) {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeShuffleActiveAsync(shuffle).expect("Error caused while trying to try to change shuffle active async");
+pub fn try_change_shuffle(shuffle: bool) -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeShuffleActiveAsync(shuffle) {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_change_repeat(repeat: MediaPlaybackAutoRepeatMode) {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeAutoRepeatModeAsync(repeat).unwrap().get().expect("Error caused while trying to try to change autorepeat mode async");
+pub fn try_change_repeat() -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeAutoRepeatModeAsync(
+        next(GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().GetPlaybackInfo().unwrap().AutoRepeatMode().unwrap().Value().unwrap())
+    ) {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_change_playback_rate(i: i64) {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangePlaybackPositionAsync(i).expect("Error caused while trying to try to change playback position async");
+pub fn try_change_playback_rate(i: f64) -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangePlaybackRateAsync(i) {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_change_playback_position(i: i64) {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangePlaybackPositionAsync(i).expect("Error caused while trying to try to change playback position async");
+pub fn try_change_playback_position(i: i64) -> bool {
+    match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangePlaybackPositionAsync(i) {
+        Ok(session) => {
+            session.get().unwrap()
+        },
+        Err(_) => {
+            false
+        }
+    }
 }
 
 //noinspection Annotator
@@ -181,4 +291,16 @@ fn save_thumbnail_and_get_path(
     File::create(file.Path().unwrap().to_string()).unwrap().write(bytes.as_slice()).unwrap();
 
     file.Path().unwrap().to_string()
+}
+
+fn next(mode: MediaPlaybackAutoRepeatMode) -> MediaPlaybackAutoRepeatMode {
+    if mode == MediaPlaybackAutoRepeatMode::None {
+        MediaPlaybackAutoRepeatMode::Track
+    } else if mode == MediaPlaybackAutoRepeatMode::Track {
+        MediaPlaybackAutoRepeatMode::List
+    } else if mode == MediaPlaybackAutoRepeatMode::List {
+        MediaPlaybackAutoRepeatMode::Track
+    } else {
+        mode
+    }
 }
