@@ -1,7 +1,7 @@
 #[cfg(target_os = "linux")]
 use {
-    crate::{MediaInfo, PlaybackState},
     anyhow::Result,
+    crate::{MediaInfo, PlaybackState},
     mpris::{LoopStatus, PlaybackStatus, PlayerFinder},
     std::time::Duration,
 };

@@ -136,6 +136,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeMedia_getMediaInfo(_env:
     {
         _env.new_string(platform::linux::get_media_info().unwrap().to_string()).unwrap().into_raw()
     }
+
+    #[cfg(target_os = "macos")]
+    {
+        _env.new_string(platform::macos::get_media_info().to_string()).unwrap().into_raw()
+    }
 }
 
 #[no_mangle]
@@ -151,6 +156,10 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeMedia_getPlaybackState(_
         _env.new_string(platform::linux::get_playback_state().unwrap().to_string()).unwrap().into_raw()
     }
 
+    #[cfg(target_os = "macos")]
+    {
+        _env.new_string(platform::macos::get_playback_state().to_string()).unwrap().into_raw()
+    }
 }
 
 #[no_mangle]
@@ -165,6 +174,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_play(_env: JN
     {
         jboolean::from(platform::linux::try_play())
     }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_play())
+    }
 }
 
 #[no_mangle]
@@ -177,6 +191,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_pause(_env: J
     #[cfg(target_os = "linux")]
     {
         jboolean::from(platform::linux::try_pause())
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_pause())
     }
 }
 
@@ -191,6 +210,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_stop(_env: JN
     {
         jboolean::from(platform::linux::try_stop())
     }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_stop())
+    }
 }
 
 #[no_mangle]
@@ -203,6 +227,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_record(_env: 
     #[cfg(target_os = "linux")]
     {
         jboolean::from(platform::linux::try_record())
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_record())
     }
 }
 
@@ -217,6 +246,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_fastForward(_
     {
         jboolean::from(platform::linux::try_fast_forward())
     }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_fast_forward())
+    }
 }
 
 #[no_mangle]
@@ -229,6 +263,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_rewind(_env: 
     #[cfg(target_os = "linux")]
     {
         jboolean::from(platform::linux::try_rewind())
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_rewind())
     }
 }
 
@@ -243,6 +282,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_next(_env: JN
     {
         jboolean::from(platform::linux::try_next())
     }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_next())
+    }
 }
 
 #[no_mangle]
@@ -255,6 +299,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_previous(_env
     #[cfg(target_os = "linux")]
     {
         jboolean::from(platform::linux::try_previous()  )
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_previous()  )
     }
 }
 
@@ -269,6 +318,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_channelUp(_en
     {
         jboolean::from(platform::linux::try_change_channel_up())
     }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_change_channel_up())
+    }
 }
 
 #[no_mangle]
@@ -281,6 +335,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_channelDown(_
     #[cfg(target_os = "linux")]
     {
         jboolean::from(platform::linux::try_change_channel_down())
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_change_channel_down())
     }
 }
 
@@ -295,6 +354,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_togglePlayPau
     {
         jboolean::from(platform::linux::try_play_pause_toggle())
     }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_play_pause_toggle())
+    }
 }
 
 #[no_mangle]
@@ -306,7 +370,12 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_shuffle(_env:
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_change_shuffle(jboolean == JNI_TRUE))
+        jboolean::from(platform::linux::try_change_shuffle())
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_change_shuffle())
     }
 }
 
@@ -321,6 +390,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_repeat(_env: 
     {
         jboolean::from(platform::linux::try_change_repeat())
     }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_change_repeat())
+    }
 }
 
 #[no_mangle]
@@ -332,7 +406,12 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_playbackRate(
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_change_playback_position(jlong))
+        jboolean::from(platform::linux::try_change_playback_rate(j_double))
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_change_playback_rate(j_double))
     }
 }
 
@@ -345,7 +424,12 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_playbackPosit
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_change_playback_position(jlong))
+        jboolean::from(platform::linux::try_change_playback_position(j_long))
+    }
+
+    #[cfg(target_os = "macos")]
+    {
+        jboolean::from(platform::macos::try_change_playback_position(j_long))
     }
 }
 
