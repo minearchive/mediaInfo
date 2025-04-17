@@ -52,6 +52,15 @@ impl MediaInfo {
         }
     }
 
+    fn empty() -> Self {
+        Self {
+            title: "Unavailable".to_string(),
+            artist: "Unavailable".to_string(),
+            album: "Unavailable".to_string(),
+            album_art: "Unavailable".to_string()
+        }
+    }
+
     fn to_string(self) -> String {
         format!(
             "{},{},{},{}",
@@ -113,6 +122,34 @@ impl PlaybackState {
             repeat_enabled,
             playback_rate_enabled,
             playback_position_enabled,
+        }
+    }
+
+    fn empty() -> Self {
+        Self {
+            is_playing: false,
+            is_pausing: false,
+            is_stopped: false,
+            is_shuffling: false,
+            is_repeating_track: false,
+            is_repeating_playlist: false,
+            current_time: -1,
+            max_time: -1,
+            play_enabled: false,
+            pause_enabled: false,
+            stop_enabled: false,
+            record_enabled: false,
+            fast_forward_enabled: false,
+            rewind_enabled: false,
+            next_enabled: false,
+            previous_enabled: false,
+            channel_up_enabled: false,
+            channel_down_enabled: false,
+            play_pause_toggle_enabled: false,
+            shuffle_enabled: false,
+            repeat_enabled: false,
+            playback_rate_enabled: false,
+            playback_position_enabled: false,
         }
     }
 
@@ -433,9 +470,17 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_playbackPosit
     }
 }
 
+#[no_mangle]
+pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_playerAvailable(_env: JNIEnv, _class: JClass) -> jboolean {
+    #[cfg(target_os = "windows")]
+    {
+        jboolean::from(!platform::windows::unavailable())
+    }
+}
+
 #[cfg(test)]
 mod tests {
-    use crate::platform;
+    use crate::{platform, MediaInfo, PlaybackState};
     use std::thread::sleep;
     use std::time::Duration;
 
@@ -463,4 +508,10 @@ mod tests {
             sleep(Duration::from_secs(2));
         }
      }
+
+    #[test]
+    fn empty_info_text() {
+        println!("{}", MediaInfo::empty().to_string());
+        println!("{}", PlaybackState::empty().to_string())
+    }
 }
