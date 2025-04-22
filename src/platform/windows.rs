@@ -328,7 +328,7 @@ pub fn try_change_playback_position(i: i64) -> bool {
 
 #[cfg(target_os = "windows")]
 pub fn unavailable() -> bool {
-    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetSessions().iter().len() != 0
+    GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetSessions().iter().next().is_none()
 }
 
 //noinspection Annotator
