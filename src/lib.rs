@@ -335,7 +335,7 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_previous(_env
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_previous()  )
+        jboolean::from(platform::linux::try_previous())
     }
 
     #[cfg(target_os = "macos")]
@@ -475,6 +475,11 @@ pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_playerAvailab
     #[cfg(target_os = "windows")]
     {
         jboolean::from(!platform::windows::unavailable())
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        jboolean::from(true)
     }
 }
 

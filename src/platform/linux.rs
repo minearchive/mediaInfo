@@ -13,12 +13,12 @@ pub fn get_media_info() -> Result<MediaInfo> {
     let metadata = player.get_metadata()?;
 
     let media_info = MediaInfo::new(
-        metadata.title().unwrap_or("").to_string(),
+        metadata.title().unwrap_or("Unavailable").to_string(),
         vec_to_str(metadata.artists().unwrap()),
-        metadata.album_name().unwrap_or("").to_string(),
-        metadata.art_url().unwrap().to_string(),
+        metadata.album_name().unwrap_or("Unavailable").to_string(),
+        metadata.art_url().unwrap_or("Unavailable").to_string(),
     );
-    
+
     Ok(media_info)
 }
 
@@ -33,9 +33,9 @@ pub fn get_playback_state() -> Result<PlaybackState> {
         player.get_playback_status()? == PlaybackStatus::Playing,
         player.get_playback_status()? == PlaybackStatus::Paused,
         player.get_playback_status()? == PlaybackStatus::Stopped,
-        player.get_shuffle()?,
-        player.get_loop_status()? == LoopStatus::Track,
-        player.get_loop_status()? == LoopStatus::Playlist,
+        if player.can_shuffle()? { player.get_shuffle()? } else { false },
+        if player.can_loop()? { player.get_loop_status()? == LoopStatus::Track } else { false },
+        if player.can_loop()? { player.get_loop_status()? == LoopStatus::Playlist } else { false },
         player.get_position_in_microseconds()?.try_into()?,
         i64::try_from(metadata.length_in_microseconds().unwrap())?,
         player.can_play()?,
@@ -183,6 +183,11 @@ pub fn try_change_playback_position(i: i64) -> bool {
         .is_some()
 }
 
+
+#[cfg(target_os = "linux")]
+pub fn playable() -> bool {
+    PlayerFinder::new().ok().is_some()
+}
 
 #[cfg(target_os = "linux")]
 fn vec_to_str(str: Vec<&str>) -> String {
