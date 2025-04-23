@@ -1,17 +1,13 @@
-use jni::objects::JClass;
-use jni::sys::{jboolean, jdouble, jlong, jstring, JNI_TRUE};
-use jni::JNIEnv;
-
 mod platform;
 
-struct MediaInfo {
+pub struct MediaInfo {
     title: String,
     artist: String,
     album: String,
     album_art: String,
 }
 
-struct PlaybackState {
+pub struct PlaybackState {
     is_playing: bool,
     is_pausing: bool,
     is_stopped: bool,
@@ -38,12 +34,7 @@ struct PlaybackState {
 }
 
 impl MediaInfo {
-    fn new(
-        title: String,
-        artist: String,
-        album: String,
-        album_art: String,
-    ) -> Self {
+    fn new(title: String, artist: String, album: String, album_art: String) -> Self {
         Self {
             title,
             artist,
@@ -57,17 +48,14 @@ impl MediaInfo {
             title: "Unavailable".to_string(),
             artist: "Unavailable".to_string(),
             album: "Unavailable".to_string(),
-            album_art: "Unavailable".to_string()
+            album_art: "Unavailable".to_string(),
         }
     }
 
-    fn to_string(self) -> String {
+    fn to_string(&self) -> String {
         format!(
             "{},{},{},{}",
-            self.title,
-            self.artist,
-            self.album,
-            self.album_art
+            self.title, self.artist, self.album, self.album_art
         )
     }
 }
@@ -153,328 +141,328 @@ impl PlaybackState {
         }
     }
 
-    fn to_string(self) -> String {
+    fn to_string(&self) -> String {
         format!(
             "{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},{},",
-            self.is_playing, self.is_pausing, self.is_stopped, self.is_shuffling, self.is_repeating_track, self.is_repeating_playlist, self.current_time, self.max_time, self.play_enabled, self.pause_enabled, self.stop_enabled, self.record_enabled, self.fast_forward_enabled, self.rewind_enabled, self.next_enabled, self.previous_enabled, self.channel_up_enabled, self.channel_down_enabled, self.play_pause_toggle_enabled, self.shuffle_enabled, self.repeat_enabled, self.playback_rate_enabled, self.playback_position_enabled
+            self.is_playing,
+            self.is_pausing,
+            self.is_stopped,
+            self.is_shuffling,
+            self.is_repeating_track,
+            self.is_repeating_playlist,
+            self.current_time,
+            self.max_time,
+            self.play_enabled,
+            self.pause_enabled,
+            self.stop_enabled,
+            self.record_enabled,
+            self.fast_forward_enabled,
+            self.rewind_enabled,
+            self.next_enabled,
+            self.previous_enabled,
+            self.channel_up_enabled,
+            self.channel_down_enabled,
+            self.play_pause_toggle_enabled,
+            self.shuffle_enabled,
+            self.repeat_enabled,
+            self.playback_rate_enabled,
+            self.playback_position_enabled
         )
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeMedia_getMediaInfo(_env: JNIEnv, _class: JClass) -> jstring {
-
+pub fn get_media_info() -> MediaInfo {
     #[cfg(target_os = "windows")]
     {
-        _env.new_string(platform::windows::get_media_info().to_string()).unwrap().into_raw()
+        platform::windows::get_media_info()
     }
 
     #[cfg(target_os = "linux")]
     {
-        _env.new_string(platform::linux::get_media_info().unwrap().to_string()).unwrap().into_raw()
+        platform::linux::get_media_info().unwrap()
     }
 
     #[cfg(target_os = "macos")]
     {
-        _env.new_string(platform::macos::get_media_info().to_string()).unwrap().into_raw()
+        platform::macos::get_media_info()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeMedia_getPlaybackState(_env: JNIEnv, _class: JClass) -> jstring {
-
+pub fn get_playback_state() -> PlaybackState {
     #[cfg(target_os = "windows")]
     {
-        _env.new_string(platform::windows::get_playback_state().to_string()).unwrap().into_raw()
+        platform::windows::get_playback_state()
     }
 
     #[cfg(target_os = "linux")]
     {
-        _env.new_string(platform::linux::get_playback_state().unwrap().to_string()).unwrap().into_raw()
+        platform::linux::get_playback_state().unwrap()
     }
 
     #[cfg(target_os = "macos")]
     {
-        _env.new_string(platform::macos::get_playback_state().to_string()).unwrap().into_raw()
+        platform::macos::get_playback_state()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_play(_env: JNIEnv, _class: JClass) -> jboolean {
-
+pub fn play() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_play())
+        platform::windows::try_play()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_play())
+        platform::linux::try_play()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_play())
+        platform::macos::try_play()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_pause(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn pause() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_pause())
+        platform::windows::try_pause()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_pause())
+        platform::linux::try_pause()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_pause())
+        platform::macos::try_pause()
     }
 }
-
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_stop(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn stop() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_stop())
+        platform::windows::try_stop()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_stop())
+        platform::linux::try_stop()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_stop())
+        platform::macos::try_stop()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_record(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn record() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_record())
+        platform::windows::try_record()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_record())
+        platform::linux::try_record()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_record())
+        platform::macos::try_record()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_fastForward(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn fast_forward() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_fast_forward())
+        platform::windows::try_fast_forward()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_fast_forward())
+        platform::linux::try_fast_forward()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_fast_forward())
+        platform::macos::try_fast_forward()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_rewind(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn rewind() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_rewind())
+        platform::windows::try_rewind()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_rewind())
+        platform::linux::try_rewind()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_rewind())
+        platform::macos::try_rewind()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_next(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn next() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_next())
+        platform::windows::try_next()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_next())
+        platform::linux::try_next()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_next())
+        platform::macos::try_next()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_previous(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn previous() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_previous())
+        platform::windows::try_previous()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_previous()  )
+        platform::linux::try_previous()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_previous()  )
+        platform::macos::try_previous()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_channelUp(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn channel_up() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_change_channel_up())
+        platform::windows::try_change_channel_up()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_change_channel_up())
+        platform::linux::try_change_channel_up()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_change_channel_up())
+        platform::macos::try_change_channel_up()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_channelDown(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn channel_down() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_change_channel_down())
+        platform::windows::try_change_channel_down()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_change_channel_down())
+        platform::linux::try_change_channel_down()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_change_channel_down())
+        platform::macos::try_change_channel_down()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_togglePlayPause(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn toggle_play_pause() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_play_pause_toggle())
+        platform::windows::try_play_pause_toggle()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_play_pause_toggle())
+        platform::linux::try_play_pause_toggle()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_play_pause_toggle())
+        platform::macos::try_play_pause_toggle()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_shuffle(_env: JNIEnv, _class: JClass, j_boolean: jboolean) -> jboolean {
+pub fn shuffle(enable: bool) -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_change_shuffle(j_boolean == JNI_TRUE))
+        platform::windows::try_change_shuffle(enable)
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_change_shuffle())
+        platform::linux::try_change_shuffle()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_change_shuffle())
+        platform::macos::try_change_shuffle()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_repeat(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn repeat() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_change_repeat())
+        platform::windows::try_change_repeat()
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_change_repeat())
+        platform::linux::try_change_repeat()
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_change_repeat())
+        platform::macos::try_change_repeat()
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_playbackRate(_env: JNIEnv, _class: JClass, j_double: jdouble) -> jboolean {
+pub fn playback_rate(rate: f64) -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_change_playback_rate(j_double))
+        platform::windows::try_change_playback_rate(rate)
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_change_playback_rate(j_double))
+        platform::linux::try_change_playback_rate(rate)
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_change_playback_rate(j_double))
+        platform::macos::try_change_playback_rate(rate)
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_playbackPosition(_env: JNIEnv, _class: JClass, j_long: jlong) -> jboolean {
+pub fn playback_position(position: i64) -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(platform::windows::try_change_playback_position(j_long))
+        platform::windows::try_change_playback_position(position)
     }
 
     #[cfg(target_os = "linux")]
     {
-        jboolean::from(platform::linux::try_change_playback_position(j_long))
+        platform::linux::try_change_playback_position(position)
     }
 
     #[cfg(target_os = "macos")]
     {
-        jboolean::from(platform::macos::try_change_playback_position(j_long))
+        platform::macos::try_change_playback_position(position)
     }
 }
 
-#[no_mangle]
-pub extern "system" fn Java_dev_yuzuki_libs_media_NativeController_playerAvailable(_env: JNIEnv, _class: JClass) -> jboolean {
+pub fn player_available() -> bool {
     #[cfg(target_os = "windows")]
     {
-        jboolean::from(!platform::windows::unavailable())
+        !platform::windows::unavailable()
     }
 }
 
