@@ -1,5 +1,8 @@
+use serde::{Deserialize, Serialize};
+
 mod platform;
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct MediaInfo {
     title: String,
     artist: String,
@@ -7,6 +10,7 @@ pub struct MediaInfo {
     album_art: String,
 }
 
+#[derive(Serialize, Deserialize, Debug)]
 pub struct PlaybackState {
     is_playing: bool,
     is_pausing: bool,
