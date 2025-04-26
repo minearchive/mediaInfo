@@ -1,5 +1,8 @@
 #[cfg(target_os = "windows")]
 use {
+    anyhow::{
+        Result
+    },
     crate::{MediaInfo, PlaybackState},
     std::{
         env,
@@ -25,303 +28,246 @@ use {
                 InputStreamOptions
             }
         }
-    }
+    },
 };
 
 #[cfg(target_os = "windows")]
-pub fn get_media_info() -> MediaInfo {
+pub fn get_media_info() -> Result<MediaInfo>  {
     if unavailable() {
-        MediaInfo::empty()
+        Ok(MediaInfo::empty())
     } else {
-        let session = GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap();
+        let session = GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?;
 
-        let properties = session.TryGetMediaPropertiesAsync().unwrap().get().unwrap();
+        let properties = session.TryGetMediaPropertiesAsync()?.get()?;
 
-        MediaInfo::new(
-            properties.Title().unwrap().to_string(),
-            properties.Artist().unwrap().to_string(),
-            properties.AlbumTitle().unwrap().to_string(),
-            save_thumbnail_and_get_path(&properties, format!("{}_{}", properties.Title().unwrap().to_string(), properties.AlbumTitle().unwrap().to_string()))
+        Ok(
+            MediaInfo::new(
+                properties.Title()?.to_string(),
+                properties.Artist()?.to_string(),
+                properties.AlbumTitle()?.to_string(),
+                save_thumbnail_and_get_path(&properties, format!("{}_{}", properties.Title()?.to_string(), properties.AlbumTitle()?.to_string()))
+            )
         )
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn get_playback_state() -> PlaybackState {
+pub fn get_playback_state() -> Result<PlaybackState> {
     if unavailable() {
-        PlaybackState::empty()
+        Ok(PlaybackState::empty())
     } else {
-        let session = GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap();
+        let session = GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?;
 
-        let timeline = &session.GetTimelineProperties().unwrap();
-        let state = &session.GetPlaybackInfo().unwrap();
+        let timeline = &session.GetTimelineProperties()?;
+        let state = &session.GetPlaybackInfo()?;
 
-        PlaybackState::new(
-            GlobalSystemMediaTransportControlsSessionPlaybackStatus::Playing == state.PlaybackStatus().unwrap(),
-            GlobalSystemMediaTransportControlsSessionPlaybackStatus::Paused == state.PlaybackStatus().unwrap(),
-            GlobalSystemMediaTransportControlsSessionPlaybackStatus::Stopped == state.PlaybackStatus().unwrap(),
-            if state.Controls().unwrap().IsShuffleEnabled().unwrap() { state.IsShuffleActive().unwrap().Value().unwrap() } else { false },
-            if state.Controls().unwrap().IsRepeatEnabled().unwrap() { state.AutoRepeatMode().unwrap().Value().unwrap() == MediaPlaybackAutoRepeatMode::Track } else { false },
-            if state.Controls().unwrap().IsRepeatEnabled().unwrap() { state.AutoRepeatMode().unwrap().Value().unwrap() == MediaPlaybackAutoRepeatMode::List } else { false },
-            timeline.Position().unwrap().Duration,
-            timeline.MaxSeekTime().unwrap().Duration,
-            state.Controls().unwrap().IsPlayEnabled().unwrap(),
-            state.Controls().unwrap().IsPauseEnabled().unwrap(),
-            state.Controls().unwrap().IsStopEnabled().unwrap(),
-            state.Controls().unwrap().IsRecordEnabled().unwrap(),
-            state.Controls().unwrap().IsFastForwardEnabled().unwrap(),
-            state.Controls().unwrap().IsRewindEnabled().unwrap(),
-            state.Controls().unwrap().IsNextEnabled().unwrap(),
-            state.Controls().unwrap().IsPreviousEnabled().unwrap(),
-            state.Controls().unwrap().IsChannelUpEnabled().unwrap(),
-            state.Controls().unwrap().IsChannelDownEnabled().unwrap(),
-            state.Controls().unwrap().IsPlayPauseToggleEnabled().unwrap(),
-            state.Controls().unwrap().IsShuffleEnabled().unwrap(),
-            state.Controls().unwrap().IsRepeatEnabled().unwrap(),
-            state.Controls().unwrap().IsPlaybackRateEnabled().unwrap(),
-            state.Controls().unwrap().IsPlaybackPositionEnabled().unwrap(),
+        Ok(
+            PlaybackState::new(
+                GlobalSystemMediaTransportControlsSessionPlaybackStatus::Playing == state.PlaybackStatus()?,
+                GlobalSystemMediaTransportControlsSessionPlaybackStatus::Paused == state.PlaybackStatus()?,
+                GlobalSystemMediaTransportControlsSessionPlaybackStatus::Stopped == state.PlaybackStatus()?,
+                if state.Controls()?.IsShuffleEnabled()? { state.IsShuffleActive()?.Value()? } else { false },
+                if state.Controls()?.IsRepeatEnabled()? { state.AutoRepeatMode()?.Value()? == MediaPlaybackAutoRepeatMode::Track } else { false },
+                if state.Controls()?.IsRepeatEnabled()? { state.AutoRepeatMode()?.Value()? == MediaPlaybackAutoRepeatMode::List } else { false },
+                timeline.Position()?.Duration,
+                timeline.MaxSeekTime()?.Duration,
+                state.Controls().unwrap().IsPlayEnabled()?,
+                state.Controls()?.IsPauseEnabled()?,
+                state.Controls()?.IsStopEnabled()?,
+                state.Controls()?.IsRecordEnabled()?,
+                state.Controls()?.IsFastForwardEnabled()?,
+                state.Controls()?.IsRewindEnabled()?,
+                state.Controls()?.IsNextEnabled()?,
+                state.Controls()?.IsPreviousEnabled()?,
+                state.Controls()?.IsChannelUpEnabled()?,
+                state.Controls()?.IsChannelDownEnabled()?,
+                state.Controls()?.IsPlayPauseToggleEnabled()?,
+                state.Controls()?.IsShuffleEnabled()?,
+                state.Controls()?.IsRepeatEnabled()?,
+                state.Controls()?.IsPlaybackRateEnabled()?,
+                state.Controls()?.IsPlaybackPositionEnabled()?,
+            )
         )
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_play() -> bool {
+pub fn try_play() -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryPlayAsync() {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryPlayAsync() {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_pause() -> bool {
+pub fn try_pause() -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryPauseAsync() {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryPauseAsync() {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
+        }
+    }
+}
+#[cfg(target_os = "windows")]
+pub fn try_stop() -> Result<bool> {
+    if unavailable() {
+        Ok(false)
+    } else {
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryStopAsync() {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_stop() -> bool {
+pub fn try_record() -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryStopAsync() {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryRecordAsync() {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_record() -> bool {
+pub fn try_fast_forward() -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryRecordAsync() {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryFastForwardAsync() {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_fast_forward() -> bool {
+pub fn try_rewind() -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryFastForwardAsync() {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryRewindAsync() {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_rewind() -> bool {
+pub fn try_next() -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryRewindAsync() {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TrySkipNextAsync() {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_next() -> bool {
+pub fn try_previous() -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TrySkipNextAsync() {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TrySkipPreviousAsync() {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_previous() -> bool {
+pub fn try_change_channel_up() -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TrySkipPreviousAsync() {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryChangeChannelUpAsync() {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_change_channel_up() -> bool {
+pub fn try_change_channel_down() -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeChannelUpAsync() {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryChangeChannelDownAsync() {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_change_channel_down() -> bool {
+pub fn try_play_pause_toggle() -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeChannelDownAsync() {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryTogglePlayPauseAsync() {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_play_pause_toggle() -> bool {
+pub fn try_change_shuffle(shuffle: bool) -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryTogglePlayPauseAsync() {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryChangeShuffleActiveAsync(shuffle) {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_change_shuffle(shuffle: bool) -> bool {
+pub fn try_change_repeat() -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeShuffleActiveAsync(shuffle) {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
-        }
-    }
-}
-
-#[cfg(target_os = "windows")]
-pub fn try_change_repeat() -> bool {
-    if unavailable() {
-        false
-    } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangeAutoRepeatModeAsync(
-            next(GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().GetPlaybackInfo().unwrap().AutoRepeatMode().unwrap().Value().unwrap())
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryChangeAutoRepeatModeAsync(
+            next(GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.GetPlaybackInfo()?.AutoRepeatMode()?.Value()?)
         ) {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_change_playback_rate(i: f64) -> bool {
+pub fn try_change_playback_rate(i: f64) -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangePlaybackRateAsync(i) {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryChangePlaybackRateAsync(i) {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }
 
 #[cfg(target_os = "windows")]
-pub fn try_change_playback_position(i: i64) -> bool {
+pub fn try_change_playback_position(i: i64) -> Result<bool> {
     if unavailable() {
-        false
+        Ok(false)
     } else {
-        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync().unwrap().get().unwrap().GetCurrentSession().unwrap().TryChangePlaybackPositionAsync(i) {
-            Ok(session) => {
-                session.get().unwrap()
-            },
-            Err(_) => {
-                false
-            }
+        match GlobalSystemMediaTransportControlsSessionManager::RequestAsync()?.get()?.GetCurrentSession()?.TryChangePlaybackPositionAsync(i) {
+            Ok(session) => Ok(session.get()?),
+            Err(_) => Ok(false),
         }
     }
 }

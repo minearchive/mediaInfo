@@ -175,298 +175,303 @@ impl PlaybackState {
     }
 }
 
-pub fn get_media_info() -> MediaInfo {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::get_media_info()
-    }
-
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::get_media_info().unwrap()
-    }
-
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::get_media_info()
-    }
+struct MediaControls {
 }
 
-pub fn get_playback_state() -> PlaybackState {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::get_playback_state()
+impl MediaControls {
+    pub fn get_media_info() -> MediaInfo {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::get_media_info().unwrap()
+        }
+
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::get_media_info().unwrap()
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::get_media_info()
+        }
     }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::get_playback_state().unwrap()
+    pub fn get_playback_state() -> PlaybackState {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::get_playback_state().unwrap()
+        }
+
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::get_playback_state().unwrap()
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::get_playback_state()
+        }
     }
 
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::get_playback_state()
-    }
-}
+    pub fn play() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_play().unwrap()
+        }
 
-pub fn play() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_play()
-    }
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_play()
+        }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_play()
-    }
-
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_play()
-    }
-}
-
-pub fn pause() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_pause()
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_play()
+        }
     }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_pause()
+    pub fn pause() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_pause().unwrap()
+        }
+
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_pause()
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_pause()
+        }
+    }
+    pub fn stop() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_stop().unwrap()
+        }
+
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_stop()
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_stop()
+        }
     }
 
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_pause()
-    }
-}
-pub fn stop() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_stop()
+    pub fn record() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_record().unwrap()
+        }
+
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_record()
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_record()
+        }
     }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_stop()
+    pub fn fast_forward() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_fast_forward().unwrap()
+        }
+
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_fast_forward()
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_fast_forward()
+        }
     }
 
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_stop()
-    }
-}
+    pub fn rewind() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_rewind().unwrap()
+        }
 
-pub fn record() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_record()
-    }
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_rewind()
+        }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_record()
-    }
-
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_record()
-    }
-}
-
-pub fn fast_forward() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_fast_forward()
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_rewind()
+        }
     }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_fast_forward()
+    pub fn next() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_next().unwrap()
+        }
+
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_next()
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_next()
+        }
     }
 
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_fast_forward()
-    }
-}
+    pub fn previous() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_previous().unwrap()
+        }
 
-pub fn rewind() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_rewind()
-    }
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_previous()
+        }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_rewind()
-    }
-
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_rewind()
-    }
-}
-
-pub fn next() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_next()
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_previous()
+        }
     }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_next()
+    pub fn channel_up() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_change_channel_up().unwrap()
+        }
+
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_change_channel_up()
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_change_channel_up()
+        }
     }
 
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_next()
-    }
-}
+    pub fn channel_down() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_change_channel_down().unwrap()
+        }
 
-pub fn previous() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_previous()
-    }
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_change_channel_down()
+        }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_previous()
-    }
-
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_previous()
-    }
-}
-
-pub fn channel_up() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_change_channel_up()
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_change_channel_down()
+        }
     }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_change_channel_up()
+    pub fn toggle_play_pause() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_play_pause_toggle().unwrap()
+        }
+
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_play_pause_toggle()
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_play_pause_toggle()
+        }
     }
 
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_change_channel_up()
-    }
-}
+    pub fn shuffle(enable: bool) -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_change_shuffle(enable).unwrap()
+        }
 
-pub fn channel_down() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_change_channel_down()
-    }
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_change_shuffle()
+        }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_change_channel_down()
-    }
-
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_change_channel_down()
-    }
-}
-
-pub fn toggle_play_pause() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_play_pause_toggle()
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_change_shuffle()
+        }
     }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_play_pause_toggle()
+    pub fn repeat() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_change_repeat().unwrap()
+        }
+
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_change_repeat()
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_change_repeat()
+        }
     }
 
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_play_pause_toggle()
-    }
-}
+    pub fn playback_rate(rate: f64) -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_change_playback_rate(rate).unwrap()
+        }
 
-pub fn shuffle(enable: bool) -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_change_shuffle(enable)
-    }
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_change_playback_rate(rate)
+        }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_change_shuffle()
-    }
-
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_change_shuffle()
-    }
-}
-
-pub fn repeat() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_change_repeat()
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_change_playback_rate(rate)
+        }
     }
 
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_change_repeat()
+    pub fn playback_position(position: i64) -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            platform::windows::try_change_playback_position(position).unwrap()
+        }
+
+        #[cfg(target_os = "linux")]
+        {
+            platform::linux::try_change_playback_position(position)
+        }
+
+        #[cfg(target_os = "macos")]
+        {
+            platform::macos::try_change_playback_position(position)
+        }
     }
 
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_change_repeat()
-    }
-}
-
-pub fn playback_rate(rate: f64) -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_change_playback_rate(rate)
-    }
-
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_change_playback_rate(rate)
-    }
-
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_change_playback_rate(rate)
-    }
-}
-
-pub fn playback_position(position: i64) -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        platform::windows::try_change_playback_position(position)
-    }
-
-    #[cfg(target_os = "linux")]
-    {
-        platform::linux::try_change_playback_position(position)
-    }
-
-    #[cfg(target_os = "macos")]
-    {
-        platform::macos::try_change_playback_position(position)
-    }
-}
-
-pub fn player_available() -> bool {
-    #[cfg(target_os = "windows")]
-    {
-        !platform::windows::unavailable()
+    pub fn player_available() -> bool {
+        #[cfg(target_os = "windows")]
+        {
+            !platform::windows::unavailable()
+        }
     }
 }
 
@@ -487,16 +492,16 @@ mod tests {
 
         #[cfg(target_os = "windows")]
         {
-            println!("{}", platform::windows::get_media_info().to_string());
-            println!("{}", platform::windows::get_playback_state().to_string());
+            println!("{}", platform::windows::get_media_info().unwrap().to_string());
+            println!("{}", platform::windows::get_playback_state().unwrap().to_string());
 
-            assert_eq!(platform::windows::try_pause(), true);
+            assert_eq!(platform::windows::try_pause().unwrap(), true);
             sleep(Duration::from_secs(2));
-            assert_eq!(platform::windows::try_play(), true);
+            assert_eq!(platform::windows::try_play().unwrap(), true);
             sleep(Duration::from_secs(2));
-            assert_eq!(platform::windows::try_next(), true);
+            assert_eq!(platform::windows::try_next().unwrap(), true);
             sleep(Duration::from_secs(2));
-            assert_eq!(platform::windows::try_previous(), true);
+            assert_eq!(platform::windows::try_previous().unwrap(), true);
             sleep(Duration::from_secs(2));
         }
      }
@@ -505,5 +510,17 @@ mod tests {
     fn empty_info_text() {
         println!("{}", MediaInfo::empty().to_string());
         println!("{}", PlaybackState::empty().to_string())
+    }
+
+    #[test]
+    fn serialize_info() {
+        let info = MediaInfo::new(
+            "Title".to_string(),
+            "Artist".to_string(),
+            "Album".to_string(),
+            "Album Art".to_string(),
+        );
+        let serialized = serde_json::to_string(&info).unwrap();
+        println!("Serialized: {}", serialized);
     }
 }
