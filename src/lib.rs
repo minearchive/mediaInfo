@@ -175,7 +175,7 @@ impl PlaybackState {
     }
 }
 
-struct MediaControls {
+pub struct MediaControls {
 }
 
 impl MediaControls {
