@@ -175,7 +175,8 @@ impl PlaybackState {
     }
 }
 
-struct MediaControls { }
+pub struct MediaControls {
+}
 
 impl MediaControls {
     pub fn get_media_info() -> MediaInfo {
@@ -476,7 +477,7 @@ impl MediaControls {
 
 #[cfg(test)]
 mod tests {
-    use crate::{MediaControls, MediaInfo, PlaybackState};
+    use crate::{platform, MediaInfo, PlaybackState};
     use std::thread::sleep;
     use std::time::Duration;
 
@@ -491,16 +492,17 @@ mod tests {
 
         #[cfg(target_os = "windows")]
         {
-            println!("{}", MediaControls::get_media_info().to_string());
-            println!("{}", MediaControls::get_playback_state().to_string());
+            println!("{}", platform::windows::get_media_info().unwrap().to_string());
+            println!("{}", platform::windows::get_playback_state().unwrap().to_string());
 
-            MediaControls::pause();
+            assert_eq!(platform::windows::try_pause().unwrap(), true);
             sleep(Duration::from_secs(2));
-            MediaControls::play();
+            assert_eq!(platform::windows::try_play().unwrap(), true);
             sleep(Duration::from_secs(2));
-            MediaControls::next();
+            assert_eq!(platform::windows::try_next().unwrap(), true);
             sleep(Duration::from_secs(2));
-            MediaControls::previous();
+            assert_eq!(platform::windows::try_previous().unwrap(), true);
+            sleep(Duration::from_secs(2));
         }
      }
 
