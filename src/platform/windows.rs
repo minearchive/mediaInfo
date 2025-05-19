@@ -1,9 +1,7 @@
 #[cfg(target_os = "windows")]
 use {
-    anyhow::{
-        Result
-    },
     crate::{MediaInfo, PlaybackState},
+    anyhow::Result,
     std::{
         env,
         fs::File,
