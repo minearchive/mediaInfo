@@ -183,7 +183,6 @@ pub fn try_change_playback_position(i: i64) -> bool {
         .is_some()
 }
 
-
 #[cfg(target_os = "linux")]
 fn vec_to_str(str: Vec<&str>) -> String {
     str.iter()
