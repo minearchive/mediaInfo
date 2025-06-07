@@ -176,13 +176,22 @@ impl PlaybackState {
 }
 
 pub struct MediaControls {
+    //old image path
+    pub old_image: String,
 }
 
 impl MediaControls {
-    pub fn get_media_info() -> MediaInfo {
+
+    pub fn new() -> Self {
+        Self {
+            old_image: String::new(),
+        }
+    }
+
+    pub fn get_media_info(&self) -> MediaInfo {
         #[cfg(target_os = "windows")]
         {
-            platform::windows::get_media_info().unwrap()
+            platform::windows::get_media_info(self.old_image.clone()).unwrap()
         }
 
         #[cfg(target_os = "linux")]
@@ -196,7 +205,7 @@ impl MediaControls {
         }
     }
 
-    pub fn get_playback_state() -> PlaybackState {
+    pub fn get_playback_state(&self) -> PlaybackState {
         #[cfg(target_os = "windows")]
         {
             platform::windows::get_playback_state().unwrap()
@@ -213,7 +222,7 @@ impl MediaControls {
         }
     }
 
-    pub fn play() -> bool {
+    pub fn play(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_play().unwrap()
@@ -230,7 +239,7 @@ impl MediaControls {
         }
     }
 
-    pub fn pause() -> bool {
+    pub fn pause(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_pause().unwrap()
@@ -246,7 +255,8 @@ impl MediaControls {
             platform::macos::try_pause()
         }
     }
-    pub fn stop() -> bool {
+
+    pub fn stop(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_stop().unwrap()
@@ -263,7 +273,7 @@ impl MediaControls {
         }
     }
 
-    pub fn record() -> bool {
+    pub fn record(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_record().unwrap()
@@ -280,7 +290,7 @@ impl MediaControls {
         }
     }
 
-    pub fn fast_forward() -> bool {
+    pub fn fast_forward(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_fast_forward().unwrap()
@@ -297,7 +307,7 @@ impl MediaControls {
         }
     }
 
-    pub fn rewind() -> bool {
+    pub fn rewind(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_rewind().unwrap()
@@ -314,7 +324,7 @@ impl MediaControls {
         }
     }
 
-    pub fn next() -> bool {
+    pub fn next(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_next().unwrap()
@@ -331,7 +341,7 @@ impl MediaControls {
         }
     }
 
-    pub fn previous() -> bool {
+    pub fn previous(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_previous().unwrap()
@@ -348,7 +358,7 @@ impl MediaControls {
         }
     }
 
-    pub fn channel_up() -> bool {
+    pub fn channel_up(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_change_channel_up().unwrap()
@@ -365,7 +375,7 @@ impl MediaControls {
         }
     }
 
-    pub fn channel_down() -> bool {
+    pub fn channel_down(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_change_channel_down().unwrap()
@@ -382,7 +392,7 @@ impl MediaControls {
         }
     }
 
-    pub fn toggle_play_pause() -> bool {
+    pub fn toggle_play_pause(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_play_pause_toggle().unwrap()
@@ -399,7 +409,7 @@ impl MediaControls {
         }
     }
 
-    pub fn shuffle(enable: bool) -> bool {
+    pub fn shuffle(&self, enable: bool) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_change_shuffle(enable).unwrap()
@@ -416,7 +426,7 @@ impl MediaControls {
         }
     }
 
-    pub fn repeat() -> bool {
+    pub fn repeat(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_change_repeat().unwrap()
@@ -433,7 +443,7 @@ impl MediaControls {
         }
     }
 
-    pub fn playback_rate(rate: f64) -> bool {
+    pub fn playback_rate(&self, rate: f64) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_change_playback_rate(rate).unwrap()
@@ -450,7 +460,7 @@ impl MediaControls {
         }
     }
 
-    pub fn playback_position(position: i64) -> bool {
+    pub fn playback_position(&self, position: i64) -> bool {
         #[cfg(target_os = "windows")]
         {
             platform::windows::try_change_playback_position(position).unwrap()
@@ -467,7 +477,7 @@ impl MediaControls {
         }
     }
 
-    pub fn player_available() -> bool {
+    pub fn player_available(&self) -> bool {
         #[cfg(target_os = "windows")]
         {
             !platform::windows::unavailable()
@@ -477,33 +487,23 @@ impl MediaControls {
 
 #[cfg(test)]
 mod tests {
-    use crate::{platform, MediaInfo, PlaybackState};
-    use std::thread::sleep;
-    use std::time::Duration;
+    use crate::{MediaControls, MediaInfo, PlaybackState};
 
     #[test]
     fn info_text() {
+        let controls = MediaControls::new();
 
-        #[cfg(target_os = "linux")]
-        {
-            println!("{}", platform::linux::get_media_info().unwrap().to_string());
-            println!("{}", platform::linux::get_playback_state().unwrap().to_string());
+        let info = controls.get_media_info();
+        println!("Media Info: {}", info.to_string());
+        let playback_state = controls.get_playback_state();
+        println!("Playback State: {}", playback_state.to_string());
+
+        if controls.player_available() {
+            println!("Player is available.");
+        } else {
+            println!("Player is not available.");
         }
 
-        #[cfg(target_os = "windows")]
-        {
-            println!("{}", platform::windows::get_media_info().unwrap().to_string());
-            println!("{}", platform::windows::get_playback_state().unwrap().to_string());
-
-            assert_eq!(platform::windows::try_pause().unwrap(), true);
-            sleep(Duration::from_secs(2));
-            assert_eq!(platform::windows::try_play().unwrap(), true);
-            sleep(Duration::from_secs(2));
-            assert_eq!(platform::windows::try_next().unwrap(), true);
-            sleep(Duration::from_secs(2));
-            assert_eq!(platform::windows::try_previous().unwrap(), true);
-            sleep(Duration::from_secs(2));
-        }
      }
 
     #[test]

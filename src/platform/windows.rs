@@ -32,7 +32,7 @@ use {
 };
 
 #[cfg(target_os = "windows")]
-pub fn get_media_info() -> Result<MediaInfo>  {
+pub fn get_media_info(old_image: String) -> Result<MediaInfo>  {
     if unavailable() {
         Ok(MediaInfo::empty())
     } else {
@@ -45,7 +45,7 @@ pub fn get_media_info() -> Result<MediaInfo>  {
                 properties.Title()?.to_string(),
                 properties.Artist()?.to_string(),
                 properties.AlbumTitle()?.to_string(),
-                save_thumbnail_and_get_path(&properties, format!("{}_{}", properties.Title()?.to_string(), properties.AlbumTitle()?.to_string()))
+                save_thumbnail_and_get_path(&properties, format!("{}_{}", properties.Title()?.to_string(), properties.AlbumTitle()?.to_string()), old_image)
             )
         )
     }
@@ -282,12 +282,36 @@ pub fn unavailable() -> bool {
 fn save_thumbnail_and_get_path(
     properties: &GlobalSystemMediaTransportControlsSessionMediaProperties,
     name: String,
+    old_image: String
 ) -> String {
+    if old_image != "" {
+        //delete it
+        if let Ok(file) = File::open(old_image.clone()) {
+            if let Err(e) = file.metadata() {
+                eprintln!("Error accessing old thumbnail: {}", e);
+            } else {
+                if let Err(e) = std::fs::remove_file(old_image) {
+                    eprintln!("Error deleting old thumbnail: {}", e);
+                }
+            }
+        }
+    }
+    
     match properties.Thumbnail() {
         Ok(p) => {
             let cache_folder = StorageFolder::GetFolderFromPathAsync(&HSTRING::from(env::temp_dir().to_str().unwrap())).unwrap().get().unwrap();
             let file_name = format!("thumbnail_cache_{}.jpg", name.replace("/", ""));
 
+            let file_name = file_name
+                .replace("\\", "")
+                .replace(":", "")
+                .replace("*", "")
+                .replace("?", "")
+                .replace("\"", "")
+                .replace("<", "")
+                .replace(">", "")
+                .replace("|", "");
+            
             let file = cache_folder
                 .CreateFileAsync(&file_name.into(), CreationCollisionOption::ReplaceExisting)
                 .unwrap()
